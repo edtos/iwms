@@ -1,0 +1,75 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    android:layout_margin="16dp">
+
+    <!-- Heading for Legal Terms -->
+    <TextView
+        android:id="@+id/legalTermsText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Legal Terms"
+        android:padding="4dp"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:textColor="#333333"
+         />
+    <View
+        android:layout_below="@+id/legalTermsText"
+        android:layout_width="match_parent"
+        android:layout_height="4dp"
+        android:background="#FFA500"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="16dp" />
+
+    <!-- Scrollable Terms and Conditions Text -->
+    <ScrollView
+        android:layout_below="@id/legalTermsText"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_above="@+id/button_container">
+
+        <TextView
+            android:id="@+id/tvLegalText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="End User License Agreement content goes here. Please scroll down and read all the terms and conditions carefully before clicking Agree or Disagree."
+            android:padding="16dp"
+            android:textSize="16sp"
+            android:lineSpacingExtra="4dp" />
+    </ScrollView>
+
+    <!-- Button Container -->
+    <LinearLayout
+        android:id="@+id/button_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal"
+        android:gravity="center">
+
+        <!-- Disagree Button -->
+        <Button
+            android:id="@+id/btnDisagree"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Disagree"
+            android:layout_margin="10dp"
+            android:background="@drawable/button_style"
+            android:textColor="#D32F2F" />
+
+        <!-- Agree Button -->
+        <Button
+            android:id="@+id/btnAgree"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Agree"
+            android:layout_margin="10dp"
+            android:background="@drawable/button_style"
+            android:textColor="#388E3C" />
+    </LinearLayout>
+
+</RelativeLayout>

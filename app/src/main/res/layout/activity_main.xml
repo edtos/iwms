@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:layout_margin="16dp"
+    android:background="#FFFFFF">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+    <ImageButton
+        android:id="@+id/btnBack"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/baseline_arrow_back_24"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:layout_marginBottom="20dp"
+        android:layout_marginTop="8dp" />
+    <!-- Toolbar or Title -->
+    <TextView
+        android:id="@+id/tvTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Environment"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:layout_margin="8dp"
+        android:textColor="#000000" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="4dp"
+        android:background="#FFA500"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="16dp" />
+
+    <!-- QR Code Scanner Button -->
+    <Button
+        android:id="@+id/btnScanQrCode"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Scan QR code"
+        android:padding="8dp"
+        android:layout_gravity="center_horizontal" />
+
+    <!-- Environment Name -->
+    <EditText
+        android:id="@+id/etEnvironmentName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Environment Name"
+        android:inputType="text"
+        android:padding="8dp"
+        android:background="@drawable/background_border"
+        android:layout_marginTop="16dp" />
+
+    <!-- Host -->
+    <EditText
+        android:id="@+id/etHost"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Host (Instance)"
+        android:inputType="text"
+        android:padding="8dp"
+        android:background="@drawable/background_border"
+        android:layout_marginTop="8dp" />
+
+    <!-- Username -->
+    <EditText
+        android:id="@+id/etUsername"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Username (Environment Code)"
+        android:inputType="text"
+        android:padding="8dp"
+        android:background="@drawable/background_border"
+        android:layout_marginTop="8dp" />
+
+    <!-- Password -->
+    <EditText
+        android:id="@+id/etPassword"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Password"
+        android:inputType="textPassword"
+        android:padding="8dp"
+        android:background="@drawable/background_border"
+        android:layout_marginTop="8dp" />
+
+    <!-- Port -->
+    <EditText
+        android:id="@+id/etPort"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Port (Either Red or Blue)"
+        android:inputType="text"
+        android:padding="8dp"
+        android:background="@drawable/background_border"
+        android:layout_marginTop="8dp" />
+
+   <LinearLayout
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content">
+
+    <ImageButton
+        android:layout_marginRight="20dp"
+        android:layout_weight="1"
+        android:id="@+id/btnDelete"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:src="@drawable/baseline_delete_24"
+    android:backgroundTint="#FF6200EE"
+    android:background="?attr/selectableItemBackgroundBorderless"
+    android:layout_marginTop="16dp"
+    android:visibility="invisible"/>
+    <ImageButton
+        android:layout_marginLeft="20dp"
+        android:layout_weight="1"
+        android:id="@+id/btnSubmit"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:src="@drawable/baseline_check_24"
+        android:backgroundTint="#FF6200EE"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:layout_marginTop="16dp" />
+   </LinearLayout>
+
+</LinearLayout>
