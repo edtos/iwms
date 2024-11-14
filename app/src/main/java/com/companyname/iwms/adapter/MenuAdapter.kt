@@ -3,6 +3,7 @@ package com.companyname.iwms.adapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.companyname.iwms.R
 import com.google.android.material.button.MaterialButton
@@ -11,7 +12,7 @@ class MenuAdapter(private val menuList: MutableSet<String>, private val onClick:
     RecyclerView.Adapter<MenuAdapter.MenuViewHolder>() {
 
     class MenuViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val button: MaterialButton = itemView.findViewById(R.id.cardButton)
+        val button: TextView = itemView.findViewById(R.id.cardButton)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MenuViewHolder {

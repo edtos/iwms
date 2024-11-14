@@ -3,109 +3,119 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp"
-    android:layout_margin="16dp"
-    android:id="@+id/main"
-    android:background="@color/white">
+    android:padding="24dp"
+    android:background="@color/background">
 
-    <!-- Title -->
+    <!-- App Logo -->
+    <ImageView
+        android:id="@+id/appLogoText"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_gravity="start"
+        android:layout_marginBottom="16dp"
+        android:src="@drawable/logo2" />
+
+    <!-- Select Environment Label -->
     <TextView
+        android:id="@+id/selectEnvironmentLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Oracle WMS Cloud"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        android:textColor="#333333"
-        />
+        android:text="Select Environment"
+        android:textSize="14sp"
+        android:textColor="#4E342E"
+        android:layout_marginBottom="4dp" />
 
-    <!-- Orange Thick Horizontal Line -->
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="4dp"
-        android:background="#FFA500"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="16dp" />
-
-    <!-- Spinner -->
+    <!-- Environment Spinner -->
     <Spinner
-        android:background="@drawable/background_border"
         android:id="@+id/environmentSpinner"
         android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:layout_marginBottom="8dp" />
-
-    <!-- Instructional Text -->
-    <TextView
-        android:drawableStart="@drawable/round_do_not_disturb_24"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Use the environment button to add environment"
-        android:textSize="14sp"
-        android:textColor="#808080"
+        android:layout_height="48dp"
+        android:background="@drawable/background_border"
+        android:padding="12dp"
         android:layout_marginBottom="16dp" />
 
-    <!-- Username Field with Material TextField -->
+    <!-- Username Label -->
+    <TextView
+        android:id="@+id/usernameLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Username"
+        android:textSize="14sp"
+        android:textColor="#4E342E"
+        android:layout_marginBottom="4dp" />
+
+    <!-- Username Field -->
     <EditText
         android:id="@+id/usernameEditText"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:hint="Username"
+        android:layout_height="48dp"
+        android:hint="Enter your username"
         android:background="@drawable/background_border"
->
+        android:padding="12dp"
+        android:textColor="#4E342E"
+        android:textColorHint="#B0BEC5"
+        android:layout_marginBottom="16dp" />
 
-    </EditText>
-
-    <!-- Required Text Below Username Field -->
+    <!-- Password Label -->
     <TextView
+        android:id="@+id/passwordLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Required"
-        android:textSize="12sp"
-        android:textColor="#808080"
-        android:layout_marginBottom="16dp"
-        android:layout_gravity="end" />
+        android:text="Password"
+        android:textSize="14sp"
+        android:textColor="#4E342E"
+        android:layout_marginBottom="4dp" />
 
+    <!-- Password Field with Eye Icon -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:orientation="horizontal">
 
         <EditText
-            android:background="@drawable/background_border"
             android:id="@+id/passwordEditText"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textColorHint="#808080"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/background_border"
+            android:hint="Enter your password"
             android:inputType="textPassword"
-            android:padding="8dp"
-            android:hint="Password"
-            android:textColor="#333333" />
+            android:padding="12dp"
+            android:textColor="#4E342E"
+            android:textColorHint="#B0BEC5" />
 
-    <!-- Required Text Below Password Field -->
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Required"
-        android:textSize="12sp"
-        android:textColor="#808080"
-        android:layout_marginBottom="24dp"
-        android:layout_gravity="end" />
+        <!-- Eye Icon for Show Password -->
+        <ImageView
+            android:id="@+id/showPasswordIcon"
+            android:layout_width="48dp"
+            android:layout_height="match_parent"
+            android:padding="12dp"
+            android:src="@drawable/ic_eye_icon"
+            android:contentDescription="Show Password"
+            android:layout_gravity="center_vertical"
+            android:tint="#4E342E" />
+    </LinearLayout>
 
-    <!-- Sign In Button -->
+    <!-- Login Button -->
     <Button
-        android:id="@+id/signInButton"
+        android:id="@+id/loginButton"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Sign In"
-        android:layout_marginBottom="24dp"
-        android:padding="12dp" />
+        android:layout_height="48dp"
+        android:text="Login"
+        android:backgroundTint="@color/yellowtheme"
+        android:textColor="#4E342E"
+        android:textStyle="bold"
+        android:layout_marginTop="24dp"
+        android:layout_marginBottom="16dp" />
 
-    <!-- Bottom Right Text Button with + Symbol -->
+    <!-- Add Environment Button -->
     <TextView
-
         android:id="@+id/addEnvironmentButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="+ Environment"
+        android:text="+ Add Environment"
         android:textSize="16sp"
-        android:layout_gravity="end"
-        android:layout_marginTop="16dp"
-        android:padding="18dp" />
+        android:textColor="#4E342E"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="16dp" />
 </LinearLayout>

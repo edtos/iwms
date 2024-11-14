@@ -1,51 +1,78 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp">
-    <!-- Back Button -->
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="@color/background">
+
+    <!-- Top Bar -->
     <LinearLayout
         android:id="@+id/layout"
         android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-    <ImageButton
-        android:layout_weight="1"
-        android:id="@+id/btnBack"
-        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/baseline_arrow_back_24"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:layout_marginBottom="20dp"
-        android:layout_marginTop="8dp" />
-    <!-- Heading for Terms and Conditions -->
+        >
+
+        <ImageButton
+            android:id="@+id/btnBack"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:src="@drawable/baseline_arrow_back_24"
+            android:background="?attr/selectableItemBackgroundBorderless"
+           />
+
+        <TextView
+            android:layout_weight="1"
+            android:id="@+id/TermsText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Environments"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="#333333"
+            android:gravity="center" />
+
+    </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/environmentRecyclerFrame"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+    <!-- No Data Text -->
     <TextView
-        android:layout_weight="2"
-        android:id="@+id/TermsText"
+        android:padding="20dp"
+        android:id="@+id/noDataTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Environments"
-        android:layout_marginBottom="20dp"
-        android:layout_margin="8dp"
-        android:textSize="20sp"
-        android:textStyle="bold"
+        android:text="No environments to display"
+        android:gravity="center"
+        android:textSize="18sp"
         android:textColor="#333333"
-        />
-    <ImageButton
-        android:layout_weight="1"
-        android:id="@+id/addBtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/baseline_add_24"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:layout_marginBottom="20dp"
-        android:layout_marginTop="8dp" />
-    </LinearLayout>
+        android:visibility="visible" />
+
+
+    <!-- RecyclerView -->
     <androidx.recyclerview.widget.RecyclerView
         android:layout_below="@+id/layout"
         android:id="@+id/environmentRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="8dp"
-        android:padding="8dp" />
-</RelativeLayout>
+        android:padding="8dp"
+        android:visibility="visible" />
+
+    <!-- Add Button -->
+    <Button
+        android:id="@+id/addEnvironmentButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="+ Add Environment"
+        android:backgroundTint="@color/yellowtheme"
+        android:textColor="#333333"
+        android:textStyle="bold"
+        android:layout_gravity="bottom"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="40dp" />
+    </FrameLayout>
+
+</LinearLayout>

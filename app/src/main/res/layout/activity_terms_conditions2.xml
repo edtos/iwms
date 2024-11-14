@@ -2,42 +2,37 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="16dp"
-    android:layout_margin="16dp">
+    android:background="@color/background">
 
-    <!-- Heading for Legal Terms -->
+    <!-- Heading for Terms and Conditions -->
     <TextView
         android:id="@+id/legalTermsText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Legal Terms"
-        android:padding="4dp"
-        android:textSize="20sp"
+        android:layout_marginTop="16dp"
+        android:text="Terms and Conditions"
+        android:textSize="22sp"
         android:textStyle="bold"
         android:textColor="#333333"
-         />
-    <View
-        android:layout_below="@+id/legalTermsText"
-        android:layout_width="match_parent"
-        android:layout_height="4dp"
-        android:background="#FFA500"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="16dp" />
+        android:gravity="center" />
 
     <!-- Scrollable Terms and Conditions Text -->
     <ScrollView
-        android:layout_below="@id/legalTermsText"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_above="@+id/button_container">
+        android:layout_below="@id/legalTermsText"
+        android:layout_above="@id/button_container"
+        android:layout_marginTop="8dp">
 
         <TextView
             android:id="@+id/tvLegalText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="End User License Agreement content goes here. Please scroll down and read all the terms and conditions carefully before clicking Agree or Disagree."
-            android:padding="16dp"
+            android:text="By using this application, you agree to the following terms and conditions. Please read them carefully. The terms include important information about your rights and obligations, as well as limitations and..."
+            android:padding="8dp"
             android:textSize="16sp"
-            android:lineSpacingExtra="4dp" />
+            android:lineSpacingExtra="4dp"
+            android:textColor="#333333" />
     </ScrollView>
 
     <!-- Button Container -->
@@ -56,9 +51,9 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Disagree"
-            android:layout_margin="10dp"
-            android:background="@drawable/button_style"
-            android:textColor="#D32F2F" />
+            android:layout_marginEnd="8dp"
+            android:backgroundTint="#E0E0E0"
+            android:textColor="#333333" />
 
         <!-- Agree Button -->
         <Button
@@ -67,9 +62,9 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Agree"
-            android:layout_margin="10dp"
-            android:background="@drawable/button_style"
-            android:textColor="#388E3C" />
+            android:layout_marginStart="8dp"
+            android:backgroundTint="@color/yellowtheme"
+            android:textColor="#333333" />
     </LinearLayout>
 
 </RelativeLayout>

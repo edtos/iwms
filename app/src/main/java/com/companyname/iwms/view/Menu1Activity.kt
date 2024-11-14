@@ -13,9 +13,9 @@ import com.companyname.iwms.config.Config
 class Menu1Activity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContentView(R.layout.activity_menu1)
         val recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
+        println("LIST "+Config.menu1.toString())
         recyclerView.layoutManager = LinearLayoutManager(this)
         val adapter = MenuAdapter(Config.menu1) { menuItem ->
             Toast.makeText(this, "Clicked: $menuItem", Toast.LENGTH_SHORT).show()

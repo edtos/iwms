@@ -3,6 +3,7 @@ package com.companyname.iwms.view
 import android.os.Bundle
 import android.widget.EditText
 import android.widget.ImageButton
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -22,7 +23,7 @@ class AddEditEnvironmentActivity : AppCompatActivity() {
     private lateinit var etPassword: EditText
     private lateinit var etPort: EditText
     private lateinit var btnSubmit: ImageButton
-    private lateinit var backBtn: ImageButton
+    private lateinit var backBtn: ImageView
     private lateinit var btnDelete: ImageButton  // Declare the delete button
 
     private var environmentId: Int? = null // To hold the ID for editing
@@ -52,7 +53,7 @@ class AddEditEnvironmentActivity : AppCompatActivity() {
         environmentId = intent.getIntExtra("environmentId", -1)
         if (environmentId != -1) {
             viewModel.getEnvironmentById(environmentId!!).observe(this) { environment ->
-                environment?.let {
+                environment ?.let {
                     etEnvironmentName.setText(it.environment)
                     etHost.setText(it.host)
                     etUsername.setText(it.username)
@@ -70,12 +71,7 @@ class AddEditEnvironmentActivity : AppCompatActivity() {
         }
 
         btnSubmit.setOnClickListener {
-            if (environmentId != -1) {
-                updateEnvironment()
-            } else {
-                // Attempt to save only if SSH connection test is successful
-                testSSHConnectionAndSave()
-            }
+            testSSHConnectionAndSave()
         }
 
         btnDelete.setOnClickListener {
@@ -101,7 +97,10 @@ class AddEditEnvironmentActivity : AppCompatActivity() {
 
                 withContext(Dispatchers.Main) {
                     Toast.makeText(this@AddEditEnvironmentActivity, "SSH connection successful!", Toast.LENGTH_SHORT).show()
-                    saveEnvironmentToDatabase()
+                    if (environmentId != -1) {
+                        updateEnvironment()
+                    }
+                    else saveEnvironmentToDatabase()
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
@@ -139,6 +138,37 @@ class AddEditEnvironmentActivity : AppCompatActivity() {
         finish()
     }
 
-    private fun updateEnvironment() { /* existing update logic */ }
-    private fun deleteEnvironment() { /* existing delete logic */ }
+    private fun updateEnvironment()
+    {
+        val environmentName = etEnvironmentName.text.toString().trim()
+        val host = etHost.text.toString().trim()
+        val username = etUsername.text.toString().trim()
+        val password = etPassword.text.toString().trim()
+        val port = etPort.text.toString().trim()
+
+        if (environmentName.isEmpty() || host.isEmpty() || username.isEmpty() || password.isEmpty() || port.isEmpty()) {
+            Toast.makeText(this, "Please fill all required fields", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val environment = Environment(
+            environment = environmentName,
+            host = host,
+            username = username,
+            password = password,
+            port = port
+        )
+
+        viewModel.updateEnvironment(environment)
+        Toast.makeText(this, "Environment updated successfully", Toast.LENGTH_SHORT).show()
+        finish()
+    }
+
+    private fun deleteEnvironment() {
+        environmentId?.let {
+            viewModel.deleteEnvironment(it)
+            Toast.makeText(this, "Environment deleted successfully", Toast.LENGTH_SHORT).show()
+            finish()
+        }
+    }
 }
