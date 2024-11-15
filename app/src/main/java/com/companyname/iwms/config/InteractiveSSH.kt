@@ -1,6 +1,7 @@
 package com.companyname.iwms.config
 
 // Add required imports
+import com.companyname.iwms.config.Config.menucommands
 import com.jcraft.jsch.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
@@ -116,10 +117,10 @@ class InteractiveSSH(
 
     fun getResponseFlow(): Flow<String> = flow {
         for (response in responseChannel) {
-            val menuList = parseMenu(response)
-            menuList.forEachIndexed { index, item ->
-                println("MY DATA${index + 1}. $item")  // Display the menu in a numbered format
-            }
+            parseControlCommands(response)
+
+            parseMenu(response)
+
             emit(response)
         }
     }
@@ -150,6 +151,27 @@ fun removeEscapeSequences(input: String): String {
     // Remove escape sequences and control characters
     return regex.replace(input, "").replace("\u0008", "")
 }
+fun parseControlCommands(log: String): List<String> {
+    // Split the log into lines and filter lines containing "Ctrl-" commands
+    val commands = log.lines()
+        .filter { it.contains("Ctrl-") }  // Keep lines with "Ctrl-" commands
+        .mapNotNull { line ->
+            // Remove escape sequences and extract the control command after "Ctrl-"
+            val cleanedLine = removeEscapeSequences(line)
+            Regex("""(Ctrl-\w+:.*)""").find(cleanedLine)?.value
+        }
+        .distinct()  // Keep only unique commands
+
+    // Assign the list to Config.menucommands
+    Config.menucommands = commands.toMutableSet()
+
+    // Print the control commands in order with proper labeling
+    commands.forEachIndexed { index, command ->
+        println("Control Command ${index + 1}: $command")
+    }
+
+    return commands
+}
 
 fun parseMenu(input: String): List<String> {
     val cleanedInput = removeEscapeSequences(input)
@@ -167,53 +189,3 @@ fun parseMenu(input: String): List<String> {
     Config.menu1=items.toMutableSet()
     return items
 }
-
-// Main function demonstrating usage
-fun main() = runBlocking {
-
-    val ssh = InteractiveSSH()
-
-    try {
-        // Connect to SSH server
-        ssh.connect()
-
-        // Launch response collector
-        val responseJob = launch {
-            ssh.getResponseFlow().collect { response ->
-                print(response)
-                val menuList = parseMenu(response)
-                menuList.forEachIndexed { index, item ->
-                    println("MY DATA${index + 1}. $item")  // Display the menu in a numbered format
-                }
-            }
-        }
-
-        // Interactive command loop
-        withContext(Dispatchers.IO) {
-            val scanner = Scanner(System.`in`)
-            while (true) {
-                print("\nEnter command (or 'exit' to quit): ")
-                val command = scanner.nextLine()
-
-                if (command.equals("exit", ignoreCase = true)) {
-                    break
-                }
-
-                try {
-                    ssh.executeCommand(command)
-                    delay(8000)
-                } catch (e: Exception) {
-                    println("Error executing command: ${e.message}")
-                }
-            }
-        }
-
-        responseJob.cancelAndJoin()
-
-    } catch (e: Exception) {
-        println("Error: ${e.message}")
-    } finally {
-        ssh.disconnect()
-    }
-}
-

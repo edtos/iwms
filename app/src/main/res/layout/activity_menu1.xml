@@ -19,10 +19,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:background="@color/white"
-       >
+        android:background="@color/white">
 
         <ImageView
+            android:id="@+id/backIcon"
             android:layout_weight="1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -30,6 +30,7 @@
             android:src="@drawable/baseline_arrow_back_24" />
 
         <ImageView
+            android:id="@+id/upIcon"
             android:layout_weight="1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -37,6 +38,7 @@
             android:src="@drawable/baseline_keyboard_double_arrow_up_24" />
 
         <ImageView
+            android:id="@+id/downIcon"
             android:layout_weight="1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -44,6 +46,7 @@
             android:src="@drawable/baseline_keyboard_double_arrow_down_24" />
 
         <ImageView
+            android:id="@+id/moreIcon"
             android:layout_weight="1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

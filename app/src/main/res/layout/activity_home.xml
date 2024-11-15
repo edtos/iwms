@@ -13,7 +13,8 @@
         android:layout_height="100dp"
         android:layout_gravity="start"
         android:layout_marginBottom="16dp"
-        android:src="@drawable/logo2" />
+        android:src="@drawable/logo2"
+        android:contentDescription="App Logo" />
 
     <!-- Select Environment Label -->
     <TextView
@@ -74,7 +75,7 @@
 
         <EditText
             android:id="@+id/passwordEditText"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:background="@drawable/background_border"
@@ -91,7 +92,7 @@
             android:layout_height="match_parent"
             android:padding="12dp"
             android:src="@drawable/ic_eye_icon"
-            android:contentDescription="Show Password"
+            android:contentDescription="Toggle Password Visibility"
             android:layout_gravity="center_vertical"
             android:tint="#4E342E" />
     </LinearLayout>
@@ -106,7 +107,17 @@
         android:textColor="#4E342E"
         android:textStyle="bold"
         android:layout_marginTop="24dp"
-        android:layout_marginBottom="16dp" />
+        android:layout_marginBottom="16dp"
+        android:contentDescription="Login Button" />
+
+    <!-- Loading Indicator -->
+    <ProgressBar
+        android:id="@+id/loadingIndicator"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="16dp"
+        android:visibility="gone" />
 
     <!-- Add Environment Button -->
     <TextView
@@ -117,5 +128,7 @@
         android:textSize="16sp"
         android:textColor="#4E342E"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="16dp" />
+        android:layout_marginTop="16dp"
+        android:contentDescription="Add Environment Button" />
+
 </LinearLayout>

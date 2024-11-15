@@ -41,12 +41,8 @@
             android:name=".view.TermsConditionsActivity"
             android:exported="true"
             android:label="@string/app_name"
-            android:theme="@style/Theme.Ssh9"></activity>
-        <activity
-            android:name=".view.LoginActivity"
-            android:exported="false"
-            android:label="@string/app_name"
-            android:theme="@style/Theme.Ssh9" />
+            android:theme="@style/Theme.Ssh9">
+        </activity>
         <activity
             android:name=".view.AddEditEnvironmentActivity"
             android:exported="true"
