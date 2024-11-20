@@ -3,11 +3,13 @@ package com.companyname.iwms.view
 import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.*
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import com.companyname.iwms.R
 import com.companyname.iwms.config.Config
 import com.companyname.iwms.config.SSHConnectionManager
@@ -34,12 +36,18 @@ class HomeActivity : AppCompatActivity() {
     }
 
     private var selectedEnvironmentId: Int? = null
-    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+    private val responseBuffer = StringBuilder()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home)
 
+        initializeUI()
+        observeEnvironments()
+        setListeners()
+    }
+
+    private fun initializeUI() {
         usernameEditText = findViewById(R.id.usernameEditText)
         passwordEditText = findViewById(R.id.passwordEditText)
         environmentSpinner = findViewById(R.id.environmentSpinner)
@@ -47,36 +55,31 @@ class HomeActivity : AppCompatActivity() {
         addEnvironmentButton = findViewById(R.id.addEnvironmentButton)
         loadingIndicator = findViewById(R.id.loadingIndicator)
         showPasswordIcon = findViewById(R.id.showPasswordIcon)
-
-        // Password visibility toggle
-        showPasswordIcon.setOnClickListener {
-            togglePasswordVisibility()
-        }
-
-        addEnvironmentButton.setOnClickListener {
-            val intent = Intent(this, EnvironmentListActivity::class.java)
-            startActivity(intent)
-        }
-
         signInButton.isEnabled = false
-        observeEnvironments()
+    }
 
+    private fun setListeners() {
+        showPasswordIcon.setOnClickListener { togglePasswordVisibility() }
+        addEnvironmentButton.setOnClickListener {
+            startActivity(Intent(this, EnvironmentListActivity::class.java))
+        }
         signInButton.setOnClickListener {
             disableButtonWithLoading()
-            scope.launch {
-                sendCredentialsAndConnect()
-            }
+            lifecycleScope.launch { sendCredentialsAndConnect() }
         }
     }
 
     private fun togglePasswordVisibility() {
-        if (passwordEditText.inputType == (android.text.InputType.TYPE_CLASS_TEXT or android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD)) {
-            passwordEditText.inputType = android.text.InputType.TYPE_CLASS_TEXT or android.text.InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
-            showPasswordIcon.setImageResource(R.drawable.ic_eye_off)
+        val isPasswordVisible =
+            passwordEditText.inputType == (android.text.InputType.TYPE_CLASS_TEXT or android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD)
+
+        passwordEditText.inputType = if (isPasswordVisible) {
+            android.text.InputType.TYPE_CLASS_TEXT or android.text.InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
         } else {
-            passwordEditText.inputType = android.text.InputType.TYPE_CLASS_TEXT or android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD
-            showPasswordIcon.setImageResource(R.drawable.ic_eye_icon)
+            android.text.InputType.TYPE_CLASS_TEXT or android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD
         }
+
+        showPasswordIcon.setImageResource(if (isPasswordVisible) R.drawable.ic_eye_off else R.drawable.ic_eye_icon)
         passwordEditText.setSelection(passwordEditText.text.length)
     }
 
@@ -88,24 +91,20 @@ class HomeActivity : AppCompatActivity() {
 
     private fun setupEnvironmentSpinner(environments: List<Environment>) {
         val environmentNames = if (environments.isEmpty()) {
-            mutableListOf("No Environments Available")
+            listOf("No Environments Available")
         } else {
-            environments.map { it.environment }.toMutableList()
+            environments.map { it.environment }
         }
 
-        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, environmentNames)
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        environmentSpinner.adapter = adapter
+        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, environmentNames).apply {
+            setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        }
 
+        environmentSpinner.adapter = adapter
         environmentSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                selectedEnvironmentId = if (environments.isNotEmpty() && position in environments.indices) {
-                    signInButton.isEnabled = true
-                    environments[position].id
-                } else {
-                    signInButton.isEnabled = false
-                    null
-                }
+                selectedEnvironmentId = environments.getOrNull(position)?.id
+                signInButton.isEnabled = selectedEnvironmentId != null
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
@@ -118,100 +117,87 @@ class HomeActivity : AppCompatActivity() {
         val username = usernameEditText.text.toString()
         val password = passwordEditText.text.toString()
 
-        withContext(Dispatchers.Main) {
-            if (username.isBlank() || password.isBlank()) {
-                Toast.makeText(this@HomeActivity, "Please enter both username and password", Toast.LENGTH_SHORT).show()
-                return@withContext
-            }
+        if (username.isBlank() || password.isBlank()) {
+            showToast("Please enter both username and password")
+            enableButtonAndHideLoading()
+            return
         }
 
         val selectedEnvironment = viewModel.allEnvironments.value?.find { it.id == selectedEnvironmentId }
-        if (selectedEnvironment != null) {
-            connectToSelectedEnvironment(selectedEnvironment, username, password)
+        if (selectedEnvironment == null) {
+            Log.d("HomeActivity", "No selected environment found.")
+            enableButtonAndHideLoading()
+            return
         }
-    }
 
+        connectToSelectedEnvironment(selectedEnvironment, username, password)
+    }
     private suspend fun connectToSelectedEnvironment(environment: Environment, username: String, password: String) {
         try {
-            sshManager.connect(environment)
+            Log.d("HomeActivity", "Attempting to connect to the environment: $environment")
+            sshManager.connect(environment) // Attempting to connect
+            Log.d("HomeActivity", "Successfully connected to SSH.")
 
-            delay(3000)
-
-            val command = "$username\t$password"
-            sshManager.sshConnection?.executeCommand(command)
-
-            scope.launch {
-                sshManager.sshConnection?.getResponseFlow()?.collect { response ->
-                    handleSSHResponse(response)
-                }
+            sshManager.sshConnection?.executeCommand("$username\t$password") // Sending credentials
+            sshManager.sshConnection?.getResponseFlow()?.collect { response ->
+                handleSSHResponse(response)
             }
         } catch (e: Exception) {
-            withContext(Dispatchers.Main) {
-                showAlert("SSH Connection failed: ${e.message}")
-            }
+            Log.e("HomeActivity", "SSH connection failed: ${e.message}")
+            showAlert("SSH Connection failed: ${e.message}")
         } finally {
-            withContext(Dispatchers.Main) {
-                enableButtonAndHideLoading()
-            }
+            enableButtonAndHideLoading()
         }
     }
+
 
     private suspend fun handleSSHResponse(response: String) {
-        withContext(Dispatchers.Main) {
-            when {
-                response.contains("Another active session") -> {
-                    showSessionExistsDialog()
-                }
-                response.contains("Invalid Login") -> {
-                    showErrorPopup("Incorrect password")
-                }
+        responseBuffer.append(response)
+        Log.d("HomeActivity", "Response Buffer: $responseBuffer")
 
-                response.contains("1)") -> {
-                    delay(1000)
-                    listenForMenuItems()
-                    delay(1000)
-                }
-            }
+        if (response.contains("Invalid Login", ignoreCase = true)) {
+            showErrorPopup("Incorrect password")
+        } else if (response.contains("Another active session", ignoreCase = true)) {
+            showSessionExistsDialog()
+        } else if (response.contains("1)") && response.contains("Ctrl-")) {
+            parseAndNavigate(response)
         }
     }
+
+    private suspend fun parseAndNavigate(response: String) {
+        val cleanResponse = removeEscapeSequences(response)
+        val menuItems = parseMenu(cleanResponse)
+        val controlCommands = parseControlCommands(cleanResponse)
+
+        Config.menu1 = menuItems.toMutableSet()
+        Config.menucommands = controlCommands.toMutableSet()
+
+        Log.d("HomeActivity", Config.menu1.toString())
+        Log.d("HomeActivity", Config.menucommands.toString())
+        navigateToMenu()
+    }
+
+    private fun navigateToMenu() {
+        startActivity(Intent(this@HomeActivity, Menu1Activity::class.java))
+    }
+
     private fun showSessionExistsDialog() {
-        AlertDialog.Builder(this).apply {
-            setTitle("Session Conflict")
-            setMessage("Another session already exists for this user. That session will end. Proceed?")
-            setPositiveButton("Yes") { _, _ ->
-                scope.launch {
-                    sendControlCommand("Ctrl-A")  // Command to end the existing session
-                    delay(1000)
-                    listenForMenuItems()  // Resume menu processing if necessary
-                }
-            }
-            setNegativeButton("No") { _, _ ->
-                scope.launch {
-                    sendControlCommand("Ctrl-W")  // Optional: Command to cancel the login attempt
-                    showToast("Session cancelled")
-                }
-            }
-            create()
-            show()
-        }
+        AlertDialog.Builder(this)
+            .setTitle("Session Conflict")
+            .setMessage("Another session already exists for this user. That session will end. Proceed?")
+            .setPositiveButton("Yes") { _, _ -> lifecycleScope.launch { sendControlCommand("Ctrl-A") } }
+            .setNegativeButton("No") { _, _ -> lifecycleScope.launch { sendControlCommand("Ctrl-W") } }
+            .create()
+            .show()
     }
 
     private fun showErrorPopup(message: String) {
-        AlertDialog.Builder(this).apply {
-            setTitle("Error")
-            setMessage(message)
-            setPositiveButton("OK") { _, _ ->
-                scope.launch {
-                    sendControlCommand("Ctrl-X") // Send CTRL-X command
-                }
-
-
-                usernameEditText.setText("")
-                passwordEditText.setText("")
-            }
-            create()
-            show()
-        }
+        AlertDialog.Builder(this)
+            .setTitle("Error")
+            .setMessage(message)
+            .setPositiveButton("OK") { _, _ -> lifecycleScope.launch { sendControlCommand("Ctrl-X") } }
+            .create()
+            .show()
     }
 
     private suspend fun sendControlCommand(command: String) {
@@ -222,13 +208,7 @@ class HomeActivity : AppCompatActivity() {
             else -> ""
         }
         sshManager.sshConnection?.executeCommand(controlCommand)
-    }
-
-    private fun listenForMenuItems() {
-        if (Config.menu1.isNotEmpty()) {
-            val intent = Intent(this@HomeActivity, Menu1Activity::class.java)
-            startActivity(intent)
-        }
+        enableButtonAndHideLoading()
     }
 
     private fun disableButtonWithLoading() {
@@ -246,20 +226,32 @@ class HomeActivity : AppCompatActivity() {
     }
 
     private fun showAlert(message: String) {
-        AlertDialog.Builder(this).apply {
-            setTitle("Error")
-            setMessage(message)
-            setPositiveButton("OK", null)
-            create()
-            show()
-        }
+        AlertDialog.Builder(this)
+            .setTitle("Error")
+            .setMessage(message)
+            .setPositiveButton("OK") { _, _ -> enableButtonAndHideLoading() }
+            .create()
+            .show()
     }
+}
 
-    override fun onDestroy() {
-        super.onDestroy()
-        scope.cancel()
-        scope.launch {
-            sshManager.disconnect()
+fun removeEscapeSequences(input: String): String {
+    val regex = Regex("""[\x1B\x08]\[[;?0-9]*[a-zA-Z]""")
+    return regex.replace(input, "").replace("\u0008", "")
+}
+
+fun parseControlCommands(log: String): List<String> {
+    return log.lines()
+        .filter { it.contains("Ctrl-") }
+        .mapNotNull { line ->
+            removeEscapeSequences(line)
+                .replace(Regex("Oracle WMS.*"), "").trim()
         }
-    }
+        .distinct()
+}
+
+
+fun parseMenu(input: String): List<String> {
+    val regex = Regex("""\d+\)\s*(.*)""")
+    return input.lines().mapNotNull { regex.find(it.trim())?.groups?.get(1)?.value }
 }
